@@ -3,6 +3,17 @@
 native telescope bindings to [zf](https://github.com/natecraddock/zf) for
 sorting results.
 
+## Why
+
+By default, [telescope](https://github.com/nvim-telescope/telescope.nvim) uses a
+sorter implemented in Lua. This is fine, but performance can suffer on larger
+lists of data.
+
+telescope-zf-native.nvim is a telescope extension that offers a compiled sorter
+with improved performance and accuracy using the
+[zf](https://github.com/natecraddock/zf) algorithm. See the [zf
+repo](https://github.com/natecraddock/zf) for more information on the algorithm.
+
 ## Installation
 
 Install in neovim with a package manager like
@@ -34,3 +45,11 @@ require("telescope").setup({
 
 require("telescope").load_extension("zf_native")
 ```
+
+## Related
+
+* [telescope-fzf-native.nvim](https://github.com/nvim-telescope/telescope-fzf-native.nvim)
+* [telescope-fzy-native.nvim](https://github.com/nvim-telescope/telescope-fzy-native.nvim)
+
+I also thank the developers who worked on these projects as my reference for
+using the LuaJIT FFI.
