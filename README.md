@@ -3,6 +3,10 @@
 native telescope bindings to [zf](https://github.com/natecraddock/zf) for
 sorting results.
 
+Note that for now I haven't made this easy to install or use. Look at issue #1 for
+instructions on building the library using Zig 0.9.0. Later this week it should be
+much easier, and I should have pre-compiled libraries available for download.
+
 ## Why
 
 By default, [telescope](https://github.com/nvim-telescope/telescope.nvim) uses a
