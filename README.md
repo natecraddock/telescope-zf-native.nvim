@@ -23,7 +23,7 @@ Install in neovim with a package manager like
 Then load the extension in telescope with default settings.
 
 ```lua
-require("telescope").load_extension("zf_native")
+require("telescope").load_extension("zf-native")
 ```
 
 The default config uses zf for all sorting.
