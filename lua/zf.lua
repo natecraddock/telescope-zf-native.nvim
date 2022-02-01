@@ -1,8 +1,21 @@
 local ffi = require("ffi")
 
--- load the zf shared library
-local dirname = string.sub(debug.getinfo(1).source, 2, #"/zf.lua" * -1)
-local path = dirname .. "../lib/libzf.so"
+-- load the zf shared library, finding the correct library depending on the
+-- arch and os
+local path = (function()
+    local arch = jit.arch:lower()
+    local os = jit.os:lower()
+    local ext
+    if os == "windows" then
+        ext = "dll"
+    else
+        ext = "so"
+    end
+
+    local dirname = string.sub(debug.getinfo(1).source, 2, #"/zf.lua" * -1)
+    return dirname .. string.format("../lib/libzf-%s-%s.%s", os, arch, ext)
+end)()
+
 local zf = ffi.load(path)
 
 -- external definitions
