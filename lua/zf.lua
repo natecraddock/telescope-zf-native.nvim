@@ -20,7 +20,7 @@ local zf = ffi.load(path)
 
 -- external definitions
 ffi.cdef[[
-int rankItem(const char str[], const char **toks, uint64_t n_tokens);
+int rankItem(const char str[], const char **toks, uint64_t n_tokens, bool filename);
 ]]
 
 local M = {}
@@ -44,9 +44,13 @@ function M.tokenize(prompt)
     }
 end
 
--- calls the shared zf library to rank the given line against the tokens
-function M.rank(line, tokens, len)
-    local score = zf.rankItem(line, tokens, len)
+---@param line string
+---@param tokens table
+---@param len number
+---@param filename boolean
+---calls the shared zf library to rank the given line against the tokens
+function M.rank(line, tokens, len, filename)
+    local score = zf.rankItem(line, tokens, len, filename)
     return score
 end
 
