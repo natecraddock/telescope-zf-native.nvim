@@ -16,7 +16,7 @@ local make_sorter = function(opts)
             local rank = zf.rank(line, self.tokens.tokens, self.tokens.len, opts.match_filename)
             if rank == -1 then return rank end
 
-            return 1.0 / (100 - rank)
+            return 1.0 - (1.0 / rank)
         end,
         -- TODO: add highlighter (depends on zf returning range info)
         -- highlighter = function(self, prompt, display)
