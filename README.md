@@ -11,8 +11,13 @@ lists of data.
 
 telescope-zf-native.nvim is a telescope extension that offers a compiled sorter
 with improved performance and accuracy using the
-[zf](https://github.com/natecraddock/zf) algorithm. See the [zf
-repo](https://github.com/natecraddock/zf) for more information on the algorithm.
+[zf](https://github.com/natecraddock/zf) algorithm. Because the majority of
+filenames in a project are unique, the zf algorithm prioritizes matches on
+filenames. zf also parses the query as a list of whitespace-delimited tokens.
+Each token may be used to further refine the search results.
+
+See the [zf repo](https://github.com/natecraddock/zf) for more
+information on the algorithm and standalone executable.
 
 ## Installation
 
