@@ -28,23 +28,44 @@ require("telescope").load_extension("zf-native")
 
 The default config uses zf for all sorting.
 
-For additional configuration, use the following
+For additional configuration, use the following:
 
 ```lua
 require("telescope").setup({
     extensions = {
-        zf_native = {
-            -- use zf for sorting file-like items
-            override_file_sorter = true,
+        ["zf-native"] = {
+            -- options for sorting file-like items
+            file = {
+                -- override default telescope file sorter
+                enable = true,
 
-            -- use zf for all other sorting
-            override_generic_sorter = false,
+                -- highlight matching text in results
+                highlight_results = true,
+
+                -- enable zf filename match priority
+                match_filename = true,
+            },
+
+            -- options for sorting all other items
+            generic = {
+                -- override default telescope generic item sorter
+                enable = true,
+
+                -- highlight matching text in results
+                highlight_results = true,
+
+                -- disable zf filename match priority
+                match_filename = false,
+            },
         }
     },
 })
 
 require("telescope").load_extension("zf-native")
 ```
+
+The above settings are the default, so if you are satisfied with the defaults
+there is no need to change anything.
 
 ### Supported Platforms
 

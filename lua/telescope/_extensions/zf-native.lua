@@ -3,7 +3,8 @@ local sorters = require("telescope.sorters")
 
 local make_sorter = function(opts)
     opts = vim.tbl_deep_extend("force", {
-        match_filename = false,
+        highlight_results = true,
+        match_filename = true,
     }, opts or {})
 
     return sorters.new({
@@ -24,28 +25,49 @@ local make_sorter = function(opts)
     })
 end
 
+local default_config = {
+    file = {
+        -- override default telescope file sorter
+        enable = true,
+
+        -- highlight matching text in results
+        highlight_results = true,
+
+        -- enable zf filename match priority
+        match_filename = true,
+    },
+    generic = {
+        -- override default telescope generic item sorter
+        enable = true,
+
+        -- highlight matching text in results
+        highlight_results = true,
+
+        -- disable zf filename match priority
+        match_filename = false,
+    },
+}
 
 return require("telescope").register_extension({
     setup = function(ext_config, config)
-        local override_file = vim.F.if_nil(ext_config.override_file_sorter, true)
-        local override_generic = vim.F.if_nil(ext_config.override_generic_sorter, true)
+        local opts = vim.tbl_deep_extend("force", default_config, ext_config or {})
 
-        if override_file then
+        if opts.file.enable then
             config.file_sorter = function()
-                return make_sorter({ match_filename = true })
+                return make_sorter(opts.file)
             end
         end
 
-        if override_generic then
+        if opts.generic.enable then
             config.generic_sorter = function()
-                return make_sorter()
+                return make_sorter(opts.generic)
             end
         end
     end,
 
     exports = {
         native_zf_scorer = function(opts)
-            return make_sorter(opts or { match_filename = true })
+            return make_sorter(opts)
         end,
     },
 })
