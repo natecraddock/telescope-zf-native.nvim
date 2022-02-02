@@ -19,9 +19,15 @@ local make_sorter = function(opts)
 
             return 1.0 - (1.0 / rank)
         end,
-        -- TODO: add highlighter (depends on zf returning range info)
-        -- highlighter = function(self, prompt, display)
-        -- end
+
+        -- it isn't ideal that we have to recalc the ranges for highlights, but without knowing the
+        -- relation between the line and the display line, we cannot use the resulting ranges from
+        -- the previous scoring. Luckily the highlighter only needs to run for the displayed lines
+        -- so it isn't too bad!
+        highlighter = function(self, _, display)
+            if opts.highlight_results == false or self.tokens == nil then return nil end
+            return zf.highlight(display, self.tokens.tokens, self.tokens.len, opts.match_filename)
+        end
     })
 end
 

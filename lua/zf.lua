@@ -20,7 +20,12 @@ local zf = ffi.load(path)
 
 -- external definitions
 ffi.cdef[[
-int rankItem(const char str[], const char **toks, uint64_t n_tokens, bool filename);
+typedef struct {
+    size_t start;
+    size_t end;
+} Range;
+
+int rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename);
 ]]
 
 local M = {}
@@ -39,19 +44,41 @@ function M.tokenize(prompt)
     end
 
     return {
-        tokens = ffi.new(string.format("const char *[%d]", #tokens + 1), tokens),
+        tokens = ffi.new(string.format("const char *[%d]", #tokens), tokens),
         len = #tokens,
     }
 end
 
+local transform_ranges = function(ranges, num_ranges)
+    local highlights = {}
+    for i = 0, num_ranges - 1 do
+        table.insert(highlights, {
+            -- offset +1 for lua string indexing
+            start = tonumber(ranges[i].start) + 1,
+            finish = tonumber(ranges[i]["end"]) + 1,
+        })
+    end
+    return highlights
+end
+
 ---@param line string
 ---@param tokens table
----@param len number
+---@param num_tokens number
 ---@param filename boolean
+---@return number
 ---calls the shared zf library to rank the given line against the tokens
-function M.rank(line, tokens, len, filename)
-    local score = zf.rankItem(line, tokens, len, filename)
+M.rank = function(line, tokens, num_tokens, filename)
+    local ranges = ffi.new(string.format("Range [%d]", num_tokens))
+    local score = zf.rankItem(line, tokens, ranges, num_tokens, filename)
     return score
+end
+
+---@param line string
+---@return table
+M.highlight = function(line, tokens, num_ranges, filename)
+    local ranges = ffi.new(string.format("Range [%d]", num_ranges))
+    zf.rankItem(line, tokens, ranges, num_ranges, filename)
+    return transform_ranges(ranges, num_ranges)
 end
 
 return M
