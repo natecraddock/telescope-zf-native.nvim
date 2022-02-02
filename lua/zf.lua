@@ -16,6 +16,8 @@ local path = (function()
     return dirname .. string.format("../lib/libzf-%s-%s.%s", os, arch, ext)
 end)()
 
+---@class Zf
+---@field rankItem fun(str: string, tokens: table, ranges: table, num_tokens: number, filename: boolean): number
 local zf = ffi.load(path)
 
 -- external definitions
