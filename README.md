@@ -72,6 +72,9 @@ require("telescope").load_extension("zf-native")
 The above settings are the default, so if you are satisfied with the defaults
 there is no need to change anything.
 
+To confirm that the extension loaded properly, and that settings are applied,
+run `:checkhealth zf-native` to view the library path and current settings.
+
 ### Supported Platforms
 
 The `lib/` directory contains libraries for:

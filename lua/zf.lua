@@ -1,8 +1,10 @@
 local ffi = require("ffi")
 
--- load the zf shared library, finding the correct library depending on the
--- arch and os
-local path = (function()
+local M = {}
+
+---get the path to the zf library
+---@return string
+M.get_path = function()
     local arch = jit.arch:lower()
     local os = jit.os:lower()
     local ext
@@ -14,11 +16,19 @@ local path = (function()
 
     local dirname = string.sub(debug.getinfo(1).source, 2, #"/zf.lua" * -1)
     return dirname .. string.format("../lib/libzf-%s-%s.%s", os, arch, ext)
-end)()
+end
 
 ---@class Zf
 ---@field rankItem fun(str: string, tokens: table, ranges: table, num_tokens: number, filename: boolean): number
-local zf = ffi.load(path)
+local zf
+
+---@return Zf
+---load the shared library on a function call. This makes it possible to run
+---require this file and not get lua errors if the path does not exist.
+M.load_zf = function()
+    zf = ffi.load(M.get_path())
+    return zf
+end
 
 -- external definitions
 ffi.cdef[[
@@ -29,8 +39,6 @@ typedef struct {
 
 int rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename);
 ]]
-
-local M = {}
 
 -- takes a prompt string and returns a C-compatible list of
 -- whitespace-separated tokens

@@ -7,6 +7,9 @@ local make_sorter = function(opts)
         match_filename = true,
     }, opts or {})
 
+    -- load shared library
+    zf.load_zf()
+
     return sorters.new({
         start = function(self, prompt)
             self.tokens = zf.tokenize(prompt)
@@ -31,7 +34,7 @@ local make_sorter = function(opts)
     })
 end
 
-local default_config = {
+local config = {
     file = {
         -- override default telescope file sorter
         enable = true,
@@ -55,18 +58,18 @@ local default_config = {
 }
 
 return require("telescope").register_extension({
-    setup = function(ext_config, config)
-        local opts = vim.tbl_deep_extend("force", default_config, ext_config or {})
+    setup = function(ext_config, tele_config)
+        config = vim.tbl_deep_extend("force", config, ext_config or {})
 
-        if opts.file.enable then
-            config.file_sorter = function()
-                return make_sorter(opts.file)
+        if config.file.enable then
+            tele_config.file_sorter = function()
+                return make_sorter(config.file)
             end
         end
 
-        if opts.generic.enable then
-            config.generic_sorter = function()
-                return make_sorter(opts.generic)
+        if config.generic.enable then
+            tele_config.generic_sorter = function()
+                return make_sorter(config.generic)
             end
         end
     end,
@@ -75,5 +78,9 @@ return require("telescope").register_extension({
         native_zf_scorer = function(opts)
             return make_sorter(opts)
         end,
+
+        get_config = function()
+            return config
+        end
     },
 })
