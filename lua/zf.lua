@@ -37,7 +37,7 @@ typedef struct {
     size_t end;
 } Range;
 
-int rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename);
+double rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename);
 ]]
 
 -- takes a prompt string and returns a C-compatible list of

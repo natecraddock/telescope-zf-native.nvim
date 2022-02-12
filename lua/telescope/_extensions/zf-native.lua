@@ -18,9 +18,7 @@ local make_sorter = function(opts)
             if self.tokens == nil then return 1 end
 
             local rank = zf.rank(line, self.tokens.tokens, self.tokens.len, opts.match_filename)
-            if rank == -1 then return rank end
-
-            return 1.0 - (1.0 / rank)
+            return rank
         end,
 
         -- it isn't ideal that we have to recalc the ranges for highlights, but without knowing the
