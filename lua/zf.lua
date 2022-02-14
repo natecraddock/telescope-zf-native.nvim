@@ -19,7 +19,7 @@ M.get_path = function()
 end
 
 ---@class Zf
----@field rankItem fun(str: string, tokens: table, ranges: table, num_tokens: number, filename: boolean): number
+---@field rankItem fun(str: string, tokens: table, ranges: table, num_tokens: number, filename: boolean, case_sensitive: boolean): number
 local zf
 
 ---@return Zf
@@ -37,7 +37,7 @@ typedef struct {
     size_t end;
 } Range;
 
-double rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename);
+double rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename, bool case_sensitive);
 ]]
 
 -- takes a prompt string and returns a C-compatible list of
@@ -75,19 +75,24 @@ end
 ---@param tokens table
 ---@param num_tokens number
 ---@param filename boolean
+---@param case_sensitive boolean
 ---@return number
 ---calls the shared zf library to rank the given line against the tokens
-M.rank = function(line, tokens, num_tokens, filename)
+M.rank = function(line, tokens, num_tokens, filename, case_sensitive)
     local ranges = ffi.new(string.format("Range [%d]", num_tokens))
-    local score = zf.rankItem(line, tokens, ranges, num_tokens, filename)
+    local score = zf.rankItem(line, tokens, ranges, num_tokens, filename, case_sensitive)
     return score
 end
 
 ---@param line string
+---@param tokens table
+---@param num_ranges number
+---@param filename boolean
+---@param case_sensitive boolean
 ---@return table
-M.highlight = function(line, tokens, num_ranges, filename)
+M.highlight = function(line, tokens, num_ranges, filename, case_sensitive)
     local ranges = ffi.new(string.format("Range [%d]", num_ranges))
-    zf.rankItem(line, tokens, ranges, num_ranges, filename)
+    zf.rankItem(line, tokens, ranges, num_ranges, filename, case_sensitive)
     return transform_ranges(ranges, num_ranges)
 end
 

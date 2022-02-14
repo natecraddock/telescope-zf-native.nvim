@@ -1,6 +1,11 @@
 local zf = require("zf")
 local sorters = require("telescope.sorters")
 
+---@return boolean
+local smart_case = function(prompt)
+    return string.find(prompt, "%u") ~= nil
+end
+
 local make_sorter = function(opts)
     opts = vim.tbl_deep_extend("force", {
         highlight_results = true,
@@ -13,11 +18,12 @@ local make_sorter = function(opts)
     return sorters.new({
         start = function(self, prompt)
             self.tokens = zf.tokenize(prompt)
+            self.case_sensitive = smart_case(prompt)
         end,
         scoring_function = function(self, _, line)
             if self.tokens == nil then return 1 end
 
-            local rank = zf.rank(line, self.tokens.tokens, self.tokens.len, opts.match_filename)
+            local rank = zf.rank(line, self.tokens.tokens, self.tokens.len, opts.match_filename, self.case_sensitive)
             return rank
         end,
 
@@ -27,7 +33,7 @@ local make_sorter = function(opts)
         -- so it isn't too bad!
         highlighter = function(self, _, display)
             if opts.highlight_results == false or self.tokens == nil then return nil end
-            return zf.highlight(display, self.tokens.tokens, self.tokens.len, opts.match_filename)
+            return zf.highlight(display, self.tokens.tokens, self.tokens.len, opts.match_filename, self.case_sensitive)
         end
     })
 end
