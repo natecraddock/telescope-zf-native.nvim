@@ -24,7 +24,10 @@ local make_sorter = function(opts)
             if self.tokens == nil then return 1 end
 
             local rank = zf.rank(line, self.tokens.tokens, self.tokens.len, opts.match_filename, self.case_sensitive)
-            return rank
+            if rank < 0 then return -1 end
+            -- we must map a number in the range 0..∞ -> 1..0
+            -- if rank is < 1 then 1 / rank gives a number greater than 1, so offet + 1 before dividing
+            return 1 - (1 / (rank + 1))
         end,
 
         -- it isn't ideal that we have to recalc the ranges for highlights, but without knowing the
