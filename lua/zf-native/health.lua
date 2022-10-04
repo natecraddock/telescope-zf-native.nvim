@@ -1,4 +1,4 @@
-local health = require("health")
+local health = vim.fn.has('nvim-0.8') and vim.health or require("health")
 local telescope = require("telescope")
 local zf = require("zf")
 
