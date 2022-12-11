@@ -19,7 +19,8 @@ M.get_path = function()
 end
 
 ---@class Zf
----@field rankItem fun(str: string, tokens: table, ranges: table, num_tokens: number, filename: boolean, case_sensitive: boolean): number
+---@field rank fun(str: string, filename: string, tokens: table, num_tokens: number, case_sensitive: boolean): number
+---@field highlight fun(str: string, filename: string, ranges: table, tokens: table, num: number, case_sensitive: boolean): nil
 local zf
 
 ---@return Zf
@@ -37,7 +38,22 @@ typedef struct {
     size_t end;
 } Range;
 
-double rankItem(const char str[], const char **toks, Range *ranges, uint64_t n_tokens, bool filename, bool case_sensitive);
+double rank(
+    const char *str,
+    const char *filename,
+    const char **tokens,
+    uint64_t num_tokens,
+    bool case_sensitive
+);
+
+void highlight(
+    const char *str,
+    const char *filename,
+    Range *ranges,
+    const char **tokens,
+    uint64_t num,
+    bool case_sensitive
+);
 ]]
 
 -- takes a prompt string and returns a C-compatible list of
@@ -79,9 +95,11 @@ end
 ---@return number
 ---calls the shared zf library to rank the given line against the tokens
 M.rank = function(line, tokens, num_tokens, filename, case_sensitive)
-    local ranges = ffi.new(string.format("Range [%d]", num_tokens))
-    local score = zf.rankItem(line, tokens, ranges, num_tokens, filename, case_sensitive)
-    return score
+    local basename = nil
+    if filename then
+        basename = string.gsub(line, "(.*/)(.*)", "%2")
+    end
+    return zf.rank(line, basename, tokens, num_tokens, case_sensitive)
 end
 
 ---@param line string
@@ -91,8 +109,12 @@ end
 ---@param case_sensitive boolean
 ---@return table
 M.highlight = function(line, tokens, num_ranges, filename, case_sensitive)
+    local basename = nil
+    if filename then
+        basename = string.gsub(line, "(.*/)(.*)", "%2")
+    end
     local ranges = ffi.new(string.format("Range [%d]", num_ranges))
-    zf.rankItem(line, tokens, ranges, num_ranges, filename, case_sensitive)
+    zf.highlight(line, basename, ranges, tokens, num_ranges, case_sensitive)
     return transform_ranges(ranges, num_ranges)
 end
 
