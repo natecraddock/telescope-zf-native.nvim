@@ -3,6 +3,11 @@
 native [telescope](https://github.com/nvim-telescope/telescope.nvim) bindings to
 [zf](https://github.com/natecraddock/zf) for sorting results.
 
+### Notice
+**I don't use Neovim regularly anymore.** I keep this plugin up because many people use it, and it is mostly easy to maintain. But I would appreciate someone to help me maintain it! Just let me know on the [issue thread](https://github.com/natecraddock/sessions.nvim/issues/3).
+
+---
+
 ## Why
 
 By default, [telescope](https://github.com/nvim-telescope/telescope.nvim) uses a
