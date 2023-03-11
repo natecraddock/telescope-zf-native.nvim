@@ -33,26 +33,22 @@ end
 
 -- external definitions
 ffi.cdef[[
-typedef struct {
-    size_t start;
-    size_t end;
-} Range;
-
 double rank(
     const char *str,
-    const char *filename,
     const char **tokens,
     uint64_t num_tokens,
-    bool case_sensitive
+    bool case_sensitive,
+    bool plain
 );
 
-void highlight(
+uint64_t highlight(
     const char *str,
-    const char *filename,
-    Range *ranges,
     const char **tokens,
-    uint64_t num,
-    bool case_sensitive
+    uint64_t num_tokens,
+    bool case_sensitive,
+    bool plain,
+    uint64_t *matches,
+    uint64_t matches_len
 );
 ]]
 
@@ -75,14 +71,44 @@ function M.tokenize(prompt)
     }
 end
 
-local transform_ranges = function(ranges, num_ranges)
+local is_index_highlighted = function(matches, matches_len, index)
+    local i = 0
+    while i < matches_len do
+        if matches[i] == index then return true end
+        i = i + 1
+    end
+    return false
+end
+
+local matches_iter = function(matches, matches_len, str)
+    local index = 0
+    local highlight = is_index_highlighted(matches, matches_len, 0)
+
+    return function()
+        if index >= #str then return nil end
+
+        local start_state = highlight
+        local i = index
+        while i < #str do
+            if start_state ~= is_index_highlighted(matches, matches_len, i) then
+                break
+            end
+            i = i + 1
+        end
+
+        local slice = { start = index + 1, finish = i }
+        highlight = not highlight
+        index = i
+        return not highlight, slice
+    end
+end
+
+local compute_ranges = function(matches, matches_len, str)
     local highlights = {}
-    for i = 0, num_ranges - 1 do
-        table.insert(highlights, {
-            -- offset +1 for lua string indexing
-            start = tonumber(ranges[i].start) + 1,
-            finish = tonumber(ranges[i]["end"]) + 1,
-        })
+    for highlight, match in matches_iter(matches, matches_len, str) do
+        if highlight then
+            table.insert(highlights, match)
+        end
     end
     return highlights
 end
@@ -95,27 +121,21 @@ end
 ---@return number
 ---calls the shared zf library to rank the given line against the tokens
 M.rank = function(line, tokens, num_tokens, filename, case_sensitive)
-    local basename = nil
-    if filename then
-        basename = string.gsub(line, "(.*/)(.*)", "%2")
-    end
-    return zf.rank(line, basename, tokens, num_tokens, case_sensitive)
+    return zf.rank(line, tokens, num_tokens, case_sensitive, not filename)
 end
+
+-- todo: test with a tiny buffer
+local buffer = ffi.new("uint64_t[2048]")
 
 ---@param line string
 ---@param tokens table
----@param num_ranges number
+---@param num_tokens number
 ---@param filename boolean
 ---@param case_sensitive boolean
 ---@return table
-M.highlight = function(line, tokens, num_ranges, filename, case_sensitive)
-    local basename = nil
-    if filename then
-        basename = string.gsub(line, "(.*/)(.*)", "%2")
-    end
-    local ranges = ffi.new(string.format("Range [%d]", num_ranges))
-    zf.highlight(line, basename, ranges, tokens, num_ranges, case_sensitive)
-    return transform_ranges(ranges, num_ranges)
+M.highlight = function(line, tokens, num_tokens, filename, case_sensitive)
+    local len = zf.highlight(line, tokens, num_tokens, case_sensitive, not filename, buffer, 2048)
+    return compute_ranges(buffer, len, line)
 end
 
 return M

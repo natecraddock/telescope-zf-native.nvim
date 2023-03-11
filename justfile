@@ -1,4 +1,4 @@
-build-command := "zig build-lib zf/src/clib.zig -O ReleaseFast -dynamic"
+build-command := "zig build-lib zf/src/clib.zig -O ReleaseSafe -dynamic"
 
 # library filenames
 linux := "libzf-linux-x64"
