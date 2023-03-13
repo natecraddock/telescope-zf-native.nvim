@@ -3,6 +3,16 @@
 native [telescope](https://github.com/nvim-telescope/telescope.nvim) bindings to
 [zf](https://github.com/natecraddock/zf) for sorting results.
 
+In short, zf is a filepath fuzzy finder. It is designed for better matching on filepaths than fzf or fzy. Matches on filenames are prioritized, and the strict path matching feature helps narrow down directory trees with precision. See the [zf](https://www.github.com/natecraddock/zf) repo for full details. Some highlights:
+
+* a match on the filename is prioritized over a match on the full path
+* a search including path separators enables "strict path matching"
+  * this means each path segment in the query must be found in a path segment of the file
+  * `src/` would match `src/index.js` but not `tests/routes/client/index.js`
+* the search query is space-separated to make narrowing down results easier
+  * searching for `init.py` would find several `__init__.py` files in a Python project
+  * but a search for `init.py c` would match `./config/__init__.py` (or any other paths also containing `c`)
+
 ## Why
 
 By default, [telescope](https://github.com/nvim-telescope/telescope.nvim) uses a
@@ -38,13 +48,6 @@ similar names like `init.lua` or `__init__.py` for example. zf parses the query
 string as a list of space-delimited tokens to easily refine the search results
 when the first match isn't the wanted file. Simply append further terms to the
 query to narrow down the results.
-
-### Note
-
-I am actively developing zf and libzf. At this point it is mostly stable, but
-I'm still refining the algorithm as I find ways to make it more efficient. That
-means that the ranking may vary between updates, but hopefully it only changes
-for the better!
 
 ## Installation
 
