@@ -6,11 +6,13 @@ local smart_case = function(prompt)
     return string.find(prompt, "%u") ~= nil
 end
 
-local make_sorter = function(opts)
+local make_sorter = function(opts, picker_opts)
     opts = vim.tbl_deep_extend("force", {
         highlight_results = true,
         match_filename = true,
     }, opts or {})
+
+    picker_opts = picker_opts or {}
 
     -- load shared library
     zf.load_zf()
@@ -24,7 +26,7 @@ local make_sorter = function(opts)
         scoring_function = function(self, _, line)
             if self.tokens == nil then
                 if opts.initial_sort then
-                    return opts.initial_sort(line)
+                    return opts.initial_sort(line, picker_opts)
                 else
                     return 1
                 end
@@ -78,14 +80,14 @@ return require("telescope").register_extension({
         config = vim.tbl_deep_extend("force", config, ext_config or {})
 
         if config.file.enable then
-            tele_config.file_sorter = function()
-                return make_sorter(config.file)
+            tele_config.file_sorter = function(picker_opts)
+                return make_sorter(config.file, picker_opts)
             end
         end
 
         if config.generic.enable then
-            tele_config.generic_sorter = function()
-                return make_sorter(config.generic)
+            tele_config.generic_sorter = function(picker_opts)
+                return make_sorter(config.generic, picker_opts)
             end
         end
     end,
