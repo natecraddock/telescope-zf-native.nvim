@@ -86,6 +86,9 @@ require("telescope").setup({
 
                 -- enable zf filename match priority
                 match_filename = true,
+
+                -- optional function to define a sort order when the query is empty
+                initial_sort = nil,
             },
 
             -- options for sorting all other items
@@ -98,6 +101,9 @@ require("telescope").setup({
 
                 -- disable zf filename match priority
                 match_filename = false,
+
+                -- optional function to define a sort order when the query is empty
+                initial_sort = nil,
             },
         }
     },
@@ -108,6 +114,28 @@ require("telescope").load_extension("zf-native")
 
 The above settings are the default, so if you are satisfied with the defaults
 there is no need to change anything.
+
+#### Example initial_sort function
+
+The `initial_sort` function is used when the query is empty.
+
+Here is an example that prioritizes `.lua` files
+
+```lua
+['zf-native'] = {
+  file = {
+    initial_sort = function (line)
+      if line:match('.lua$') then
+        return 0
+      end
+      return 1
+    end
+  }
+}
+```
+
+The function accepts a line to rank and should return a number between 0 and 1,
+with numbers closer to 0 giving the line a higher priority.
 
 ### Supported Platforms
 

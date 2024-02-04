@@ -20,13 +20,20 @@ local make_sorter = function(opts)
             self.tokens = zf.tokenize(prompt)
             self.case_sensitive = smart_case(prompt)
         end,
+
         scoring_function = function(self, _, line)
-            if self.tokens == nil then return 1 end
+            if self.tokens == nil then
+                if opts.initial_sort then
+                    return opts.initial_sort(line)
+                else
+                    return 1
+                end
+            end
 
             local rank = zf.rank(line, self.tokens.tokens, self.tokens.len, opts.match_filename, self.case_sensitive)
             if rank < 0 then return -1 end
             -- we must map a number in the range 0..∞ -> 1..0
-            -- if rank is < 1 then 1 / rank gives a number greater than 1, so offet + 1 before dividing
+            -- if rank is < 1 then 1 / rank gives a number greater than 1, so offset + 1 before dividing
             return 1 - (1 / (rank + 1))
         end,
 
@@ -47,6 +54,9 @@ local config = {
 
         -- enable zf filename match priority
         match_filename = true,
+
+        -- optional function to define a sort order when the query is empty
+        initial_sort = nil,
     },
     generic = {
         -- override default telescope generic item sorter
@@ -57,6 +67,9 @@ local config = {
 
         -- disable zf filename match priority
         match_filename = false,
+
+        -- optional function to define a sort order when the query is empty
+        initial_sort = nil,
     },
 }
 
