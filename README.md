@@ -3,6 +3,8 @@
 native [telescope](https://github.com/nvim-telescope/telescope.nvim) bindings to
 [zf](https://github.com/natecraddock/zf) for sorting results.
 
+[Try it online!](https://nathancraddock.com/zf-playground/)
+
 In short, zf is a filepath fuzzy finder. It is designed for better matching on filepaths than fzf or fzy. Matches on filenames are prioritized, and the strict path matching feature helps narrow down directory trees with precision. See the [zf](https://www.github.com/natecraddock/zf) repo for full details. Some highlights:
 
 * a match on the filename is prioritized over a match on the full path
