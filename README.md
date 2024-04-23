@@ -91,6 +91,9 @@ require("telescope").setup({
 
                 -- optional function to define a sort order when the query is empty
                 initial_sort = nil,
+
+                -- set to false to enable case sensitive matching
+                smart_case = true,
             },
 
             -- options for sorting all other items
@@ -106,6 +109,9 @@ require("telescope").setup({
 
                 -- optional function to define a sort order when the query is empty
                 initial_sort = nil,
+
+                -- set to false to enable case sensitive matching
+                smart_case = true,
             },
         }
     },

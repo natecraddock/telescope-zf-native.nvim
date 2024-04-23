@@ -18,7 +18,7 @@ local make_sorter = function(opts)
     return sorters.new({
         start = function(self, prompt)
             self.tokens = zf.tokenize(prompt)
-            self.case_sensitive = smart_case(prompt)
+            self.case_sensitive = (opts.smart_case == false) or smart_case(prompt)
         end,
 
         scoring_function = function(self, _, line)
@@ -57,6 +57,9 @@ local config = {
 
         -- optional function to define a sort order when the query is empty
         initial_sort = nil,
+
+        -- set to false to enable case sensitive matching
+        smart_case = true,
     },
     generic = {
         -- override default telescope generic item sorter
@@ -70,6 +73,9 @@ local config = {
 
         -- optional function to define a sort order when the query is empty
         initial_sort = nil,
+
+        -- set to false to enable case sensitive matching
+        smart_case = true
     },
 }
 
