@@ -2,18 +2,24 @@ local health = vim.fn.has('nvim-0.8') and vim.health or require("health")
 local telescope = require("telescope")
 local zf = require("zf")
 
+local health_start = health.start or health.report_start
+local health_error = health.error or health.report_error
+local health_warn = health.warn or health.report_warn
+local health_info = health.info or health.report_info
+local health_ok = health.ok or health.report_ok
+
 local M = {}
 
 M.check = function()
-    health.report_start("Installation")
+    health_start("Installation")
 
     local path = zf.get_path()
-    health.report_info(string.format("libzf library path: %s", path))
+    health_info(string.format("libzf library path: %s", path))
 
     if vim.fn.filereadable(path) == 0 then
-        health.report_error("libzf path does not exist")
+        health_error("libzf path does not exist")
     else
-        health.report_ok("libzf path is valid")
+        health_ok("libzf path is valid")
     end
 
     local configuration = { "Configuration" }
@@ -44,7 +50,7 @@ M.check = function()
         table.insert(configuration, "  - zf telescope generic sorter disabled")
     end
 
-    health.report_start(table.concat(configuration, "\n"))
+    health_start(table.concat(configuration, "\n"))
 
 end
 
