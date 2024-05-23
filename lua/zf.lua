@@ -14,6 +14,10 @@ M.get_path = function()
         ext = "so"
     end
 
+    local libzf_path = package.searchpath(string.format("libzf-%s-%s", os, arch), package.cpath)
+    if libzf_path then
+        return libzf_path
+    end
     local dirname = string.sub(debug.getinfo(1).source, 2, #"/zf.lua" * -1)
     return dirname .. string.format("../lib/libzf-%s-%s.%s", os, arch, ext)
 end
