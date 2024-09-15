@@ -139,7 +139,7 @@ Here is an example that prioritizes `.lua` files
 ['zf-native'] = {
   file = {
     initial_sort = function (line)
-      if line:match('.lua$') then
+      if line:match('%.lua$') then
         return 0
       end
       return 1
